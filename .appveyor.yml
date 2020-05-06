@@ -1,0 +1,9 @@
+build: off
+install:
+  - set PATH=C:\msys64\usr\bin;%PATH%
+  - bash -lc "pacman --needed --noconfirm -Syu"
+  - bash -lc "pacman --needed --noconfirm -Sy"
+  - bash -lc "pacman --noconfirm -S mingw-w64-x86_64-cmake mingw-w64-x86_64-gtk2"
+test_script:
+  - cmake .
+  - make
