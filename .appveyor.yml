@@ -10,4 +10,6 @@ install:
   - bash -lc "pacman --noconfirm -S mingw-w64-x86_64-toolchain"
   - cd "C:\projects\gtkttk\cmake"
 test_script:
-  - ./build.bat
+  - cmake . -G "MinGW Makfiles"
+  - mingw32-make
+
