@@ -8,6 +8,6 @@ install:
   - bash -lc "pacman --noconfirm -S mingw-w64-x86_64-glib2"
   - bash -lc "pacman --noconfirm -S mingw-w64-x86_64-tk"
   - bash -lc "pacman --noconfirm -S mingw-w64-x86_64-toolchain"
-  - cd "C:\projects\gtkttk"
+  - cd "C:\projects\gtkttk\cmake"
 test_script:
-  - ./cmake/build.bat
+  - ./build.bat
