@@ -11,6 +11,5 @@ install:
   - cd "C:\projects\gtkttk"
   - set PATH=C:\msys\mingw64\bin
 test_script:
-  - cmake . -G "MinGW Makefiles"
-  - mingw32-make
-
+  - C:\msys\mingw64\bin\cmake . -G "MinGW Makefiles"
+  - C:\msys\mingw64\mingw32-make
