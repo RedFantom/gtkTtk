@@ -1,5 +1,5 @@
 environment:
-  APPVEYOR_RDP_PASSWORD: tile-gtk
+  APPVEYOR_RDP_PASSWORD: rUC,QiKE%gde~SqZ
 init:
 - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
