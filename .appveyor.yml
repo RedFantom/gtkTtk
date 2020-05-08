@@ -13,7 +13,7 @@ install:
   - bash -lc "pacman --noconfirm -S mingw-w64-x86_64-glib2"
   - bash -lc "pacman --noconfirm -S mingw-w64-x86_64-tk"
   - bash -lc "pacman --noconfirm -S mingw-w64-x86_64-toolchain"
-  - set PATH=C:\msys\mingw64\bin
+  - set PATH=C:\msys64\mingw64\bin
 test_script:
-  - C:\msys\mingw64\bin\cmake . -G "MinGW Makefiles"
-  - C:\msys\mingw64\mingw32-make
+  - C:\msys64\mingw64\bin\cmake . -G "MinGW Makefiles"
+  - C:\msys64\mingw64\mingw32-make
