@@ -281,13 +281,13 @@ void gttk_CopyGtkPixmapOnToDrawable(GdkPixmap *gdkDrawable, Drawable d,
     GC gc = Tk_GetGC(tkwin, GCForeground | GCBackground | GCGraphicsExposures,
                      &gcValues);
     GdkGC *gdkGC = gttk_gdk_gc_new(gdkDrawable);
-    HDC hdcSrc = gttk_gdk_win32_hdc_get(gdkDrawable, gdkGC, gc_usage);
+    HDC hdcSrc = gdk_win32_hdc_get(gdkDrawable, gdkGC, gc_usage);
     /* Create a Tk Drawable from the HDC... */
     TkWinDrawable gtkD;
     gtkD.type = TWD_WINDC;
     gtkD.winDC.hdc = hdcSrc;
     XCopyArea(Tk_Display(tkwin), (Drawable) &gtkD, d, gc, x, y, w, h, x1, x2);
-    gttk_gdk_win32_hdc_release(gdkDrawable, gdkGC, gc_usage);
+    gdk_win32_hdc_release(gdkDrawable, gdkGC, gc_usage);
     if (gdkGC) gttk_g_object_unref(gdkGC);
     Tk_FreeGC(Tk_Display(tkwin), gc);
 #else
