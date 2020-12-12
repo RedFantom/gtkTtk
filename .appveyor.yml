@@ -32,5 +32,18 @@ build_script:
   - "%PYTHON%\\python.exe setup.py build"
 test_script:
   - "%PYTHON%\\python.exe -m nose"
+artifacts:
+  - path: "/dist/*.whl"
+deploy:
+  provider: GitHub
+  auth_token:
+    secure: QimY++/91urL/oMJL/q2zYFqc1C7747HguEaIbPQovtC3zG8CK+TiCmFOCXy1D6e
+  artifact: "/dist/*.whl"
+  draft: false
+  prerelease: false
+  force_update: true
+  on:
+    branch: master
+    appveyor_repo_tag: true
 on_finish:
 - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
