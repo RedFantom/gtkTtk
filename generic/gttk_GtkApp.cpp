@@ -143,7 +143,7 @@ gttk_WidgetCache **gttk_CreateGtkApp(Tcl_Interp *interp) {
    */
   wc->gttk_MainInterp  = interp;
   wc->gttk_tkwin       = Tk_MainWindow(interp);
-  if (wc->gttk_tkwin != NULL && wc->gttk_MainDisplay == None) {
+  if (wc->gttk_tkwin != NULL && wc->gttk_MainDisplay == NULL) {
     Tk_MakeWindowExist(wc->gttk_tkwin);
     wc->gttk_MainDisplay = Tk_Display(wc->gttk_tkwin);
   }
