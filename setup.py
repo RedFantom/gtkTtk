@@ -3,14 +3,6 @@ Author: RedFantom
 License: GNU GPLv3
 Copyright (c) 2020 RedFantom
 """
-import shutil
-try:
-    from skbuild import setup
-    from skbuild.command.build import build
-except ImportError:
-    print("scikit-build is required to build this project")
-    print("install with `python -m pip install scikit-build`")
-    raise
 import sys
 
 
@@ -20,29 +12,50 @@ def read(file_name):
     return contents
 
 
-class BuildCommand(build):
-    """
-    Intercept the build command to build the required modules in ./build
+if "linux" in sys.platform:
+    try:
+        from skbuild import setup
+        from skbuild.command.build import build
+    except ImportError:
+        print("scikit-build is required to build this project")
+        print("install with `python -m pip install scikit-build`")
+        raise
 
-    gttk depends on a library built from source. Building this library
-    requires the following to be installed, Ubuntu package names:
-    - libx11-dev
-    - libgtk2.0-dev
-    - libgdk-pixbuf2.0-dev
-    - tcl-dev
-    - tk-dev
-    """
 
-    def run(self):
-        if "linux" in sys.platform:
+    class BuildCommand(build):
+        """
+        Intercept the build command to build the required modules in ./build
+
+        gttk depends on a library built from source. Building this library
+        requires the following to be installed, Ubuntu package names:
+        - libx11-dev
+        - libgtk2.0-dev
+        - libgdk-pixbuf2.0-dev
+        - tcl-dev
+        - tk-dev
+        """
+
+        def run(self):
             build.run(self)
-        elif "win" in sys.platform:
-            print("Running setup on Windows: Assuming that libgttk.dll has been built and is in working directory")
-            print("If libgttk.dll has not been built: It should be built with MSYS")
-            shutil.copy("libgttk.dll", "gttk/libgttk.dll")
-            shutil.copy("library/gttk.tcl", "gttk/gttk.tcl")
-            shutil.copy("library/pkgIndex.tcl", "gttk/pkgIndex.tcl")
 
+    kwargs = {"install_requires": ["scikit-build"], "cmdClass": {"build": BuildCommand}}
+
+elif "win" in sys.platform:
+    import shutil
+
+    print("Running setup on Windows: Assuming that libgttk.dll has been built and is in working directory")
+    print("If libgttk.dll has not been built: It should be built with MSYS")
+    shutil.copy("libgttk.dll", "gttk/libgttk.dll")
+    shutil.copy("library/gttk.tcl", "gttk/gttk.tcl")
+    shutil.copy("library/pkgIndex.tcl", "gttk/pkgIndex.tcl")
+
+    kwargs = {}
+
+else:
+    print("Only Linux and Windows are currently supported by the build system")
+    print("If you wish to help design a build method for your OS, please")
+    print("contact the project author.")
+    raise RuntimeError("Unsupported platform")
 
 setup(
     name="gttk",
@@ -55,6 +68,5 @@ setup(
     license="GNU GPLv3",
     long_description=read("README.md"),
     zip_safe=False,
-    install_requires=["scikit-build"],
-    cmdclass={"build": BuildCommand}
+    **kwargs
 )
