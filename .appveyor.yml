@@ -3,7 +3,6 @@ environment:
 build: off
 install:
   - set PATH=C:\msys64\usr\bin;%PATH%
-  - python3 -m pip install nose scikit-build
   # Load PGP Keys for Msys64
   - bash -lc "curl -O http://repo.msys2.org/msys/x86_64/msys2-keyring-r21.b39fb11-1-any.pkg.tar.xz"
   - bash -lc "curl -O http://repo.msys2.org/msys/x86_64/msys2-keyring-r21.b39fb11-1-any.pkg.tar.xz.sig"
@@ -20,6 +19,9 @@ install:
   - bash -lc "pacman --needed --noconfirm -S mingw-w64-x86_64-glib2"
   - bash -lc "pacman --needed --noconfirm -S mingw-w64-x86_64-tk"
   - bash -lc "pacman --needed --noconfirm -S mingw-w64-x86_64-toolchain"
+  - bash -lc "pacman --needed --noconfirm -S mingw-w64-x86_64-python3-pip"
+  # Install Python build dependencies
+  - python3 -m pip install scikit-build nose
   # Now using MinGW pkg-config and related executables
   - set PATH=C:\msys64\mingw64\bin;%PATH%
 build_script:
