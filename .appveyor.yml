@@ -29,6 +29,7 @@ build_script:
   - C:\msys64\mingw64\bin\cmake . -G "MinGW Makefiles"
   - C:\msys64\mingw64\bin\mingw32-make
   - "%PYTHON%\\python.exe setup.py build"
+  - "%PYTHON%\\python.exe setup.py bdist_wheel"
 test_script:
   - "%PYTHON%\\python.exe -m nose"
 artifacts:
