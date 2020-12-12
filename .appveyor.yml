@@ -22,9 +22,11 @@ install:
   - bash -lc "pacman --needed --noconfirm -S mingw-w64-x86_64-toolchain"
   # Now using MinGW pkg-config and related executables
   - set PATH=C:\msys64\mingw64\bin;%PATH%
-test_script:
+build_script:
   - C:\msys64\mingw64\bin\cmake . -G "MinGW Makefiles"
   - C:\msys64\mingw64\bin\mingw32-make
+  - python3 setup.py build
+test_script:
   - python3 -m nose
 on_finish:
 - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
