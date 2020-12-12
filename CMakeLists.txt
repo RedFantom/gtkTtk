@@ -130,7 +130,7 @@ INCLUDE_DIRECTORIES ( ${TK_INCLUDE_PATH}/tk-private/generic/ttk )
 IF ( WIN32 )  # Include additional directories for MSYS build
   INCLUDE_DIRECTORIES ( ${TK_INCLUDE_PATH}/tk8.6/tk-private/generic )
   INCLUDE_DIRECTORIES ( ${TK_INCLUDE_PATH}/tk8.6/tk-private/generic/ttk )
-  INCLUDE_DIRECTORIES ( ${TK_INCLUDE_PATH}/tk8.6/tk-private/generic/win )
+  INCLUDE_DIRECTORIES ( ${TK_INCLUDE_PATH}/tk8.6/tk-private/win )
 ENDIF ( WIN32 )
 INCLUDE_DIRECTORIES ( ${PROJECT_SOURCE_DIR}/generic )
 
