@@ -23,14 +23,14 @@ install:
   - bash -lc "pacman --needed --noconfirm -S mingw-w64-x86_64-toolchain"
   # - bash -lc "pacman --needed --noconfirm -S mingw-w64-x86_64-python3-pip"
   # Install Python build dependencies
-  - %PYTHON%\python.exe -m pip install scikit-build nose
+  - "%PYTHON%\\python.exe -m pip install scikit-build nose"
   # Now using MinGW pkg-config and related executables
   - set PATH=C:\msys64\mingw64\bin;%PATH%
 build_script:
   - C:\msys64\mingw64\bin\cmake . -G "MinGW Makefiles"
   - C:\msys64\mingw64\bin\mingw32-make
-  - %PYTHON%\python.exe setup.py build
+  - "%PYTHON%\\python.exe setup.py build"
 test_script:
-  - %PYTHON%\python.exe -m nose
+  - "%PYTHON%\\python.exe -m nose"
 on_finish:
 - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
