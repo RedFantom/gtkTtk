@@ -1,5 +1,7 @@
 environment:
   APPVEYOR_RDP_PASSWORD: rUC,QiKE%gde~SqZ
+  matrix:
+    - PYTHON: "C:\\PYTHON38-x64"
 build: off
 install:
   - set PATH=C:\msys64\usr\bin;%PATH%
@@ -19,16 +21,16 @@ install:
   - bash -lc "pacman --needed --noconfirm -S mingw-w64-x86_64-glib2"
   - bash -lc "pacman --needed --noconfirm -S mingw-w64-x86_64-tk"
   - bash -lc "pacman --needed --noconfirm -S mingw-w64-x86_64-toolchain"
-  - bash -lc "pacman --needed --noconfirm -S mingw-w64-x86_64-python3-pip"
+  # - bash -lc "pacman --needed --noconfirm -S mingw-w64-x86_64-python3-pip"
   # Install Python build dependencies
-  - python3 -m pip install scikit-build nose
+  - %PYTHON%\python.exe -m pip install scikit-build nose
   # Now using MinGW pkg-config and related executables
   - set PATH=C:\msys64\mingw64\bin;%PATH%
 build_script:
   - C:\msys64\mingw64\bin\cmake . -G "MinGW Makefiles"
   - C:\msys64\mingw64\bin\mingw32-make
-  - python3 setup.py build
+  - %PYTHON%\python.exe setup.py build
 test_script:
-  - python3 -m nose
+  - %PYTHON%\python.exe -m nose
 on_finish:
 - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
