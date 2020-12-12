@@ -3,6 +3,7 @@ Author: RedFantom
 License: GNU GPLv3
 Copyright (c) 2020 RedFantom
 """
+import shutil
 try:
     from skbuild import setup
     from skbuild.command.build import build
@@ -10,6 +11,7 @@ except ImportError:
     print("scikit-build is required to build this project")
     print("install with `python -m pip install scikit-build`")
     raise
+import sys
 
 
 def read(file_name):
@@ -32,7 +34,14 @@ class BuildCommand(build):
     """
 
     def run(self):
-        build.run(self)
+        if "linux" in sys.platform:
+            build.run(self)
+        elif "win" in sys.platform:
+            print("Running setup on Windows: Assuming that libgttk.dll has been built and is in working directory")
+            print("If libgttk.dll has not been built: It should be built with MSYS")
+            shutil.copy("libgttk.dll", "gttk/libgttk.dll")
+            shutil.copy("library/gttk.tcl", "gttk/gttk.tcl")
+            shutil.copy("library/pkgIndex.tcl", "gttk/pkgIndex.tcl")
 
 
 setup(

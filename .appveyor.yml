@@ -2,6 +2,7 @@ environment:
   APPVEYOR_RDP_PASSWORD: rUC,QiKE%gde~SqZ
 build: off
 install:
+  - python3 -m pip install nose scikit-build
   - set PATH=C:\msys64\usr\bin;%PATH%
   # Load PGP Keys for Msys64
   - bash -lc "curl -O http://repo.msys2.org/msys/x86_64/msys2-keyring-r21.b39fb11-1-any.pkg.tar.xz"
@@ -24,5 +25,6 @@ install:
 test_script:
   - C:\msys64\mingw64\bin\cmake . -G "MinGW Makefiles"
   - C:\msys64\mingw64\bin\mingw32-make
+  - python3 -m nose
 on_finish:
 - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
