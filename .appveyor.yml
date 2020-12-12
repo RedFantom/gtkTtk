@@ -3,6 +3,12 @@ environment:
 build: off
 install:
   - set PATH=C:\msys64\usr\bin;%PATH%
+  # Load PGP Keys for Msys64
+  - bash -lc "curl -O http://repo.msys2.org/msys/x86_64/msys2-keyring-r21.b39fb11-1-any.pkg.tar.xz"
+  - bash -lc "curl -O http://repo.msys2.org/msys/x86_64/msys2-keyring-r21.b39fb11-1-any.pkg.tar.xz.sig"
+  - bash -lc "pacman-key --verify msys2-keyring-r21.b39fb11-1-any.pkg.tar.xz.sig"
+  - bash -lc "pacman -U --noconfirm --config <(echo) msys2-keyring-r21.b39fb11-1-any.pkg.tar.xz"
+  # Install build dependencies
   - bash -lc "pacman --needed --noconfirm -Syu"
   - bash -lc "pacman --needed --noconfirm -Sy"
   - bash -lc "pacman --noconfirm -S mingw-w64-x86_64-cmake"
@@ -10,7 +16,7 @@ install:
   - bash -lc "pacman --noconfirm -S mingw-w64-x86_64-glib2"
   - bash -lc "pacman --noconfirm -S mingw-w64-x86_64-tk"
   - bash -lc "pacman --noconfirm -S mingw-w64-x86_64-toolchain"
-  - set PATH=C:\msys64\mingw64\bin
+  - set PATH=C:\msys64\mingw64\bin;%PATH%
 test_script:
   - C:\msys64\mingw64\bin\cmake . -G "MinGW Makefiles"
   - C:\msys64\mingw64\mingw32-make
