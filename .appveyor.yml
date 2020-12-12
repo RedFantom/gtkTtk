@@ -2,8 +2,8 @@ environment:
   APPVEYOR_RDP_PASSWORD: rUC,QiKE%gde~SqZ
 build: off
 install:
-  - python3 -m pip install nose scikit-build
   - set PATH=C:\msys64\usr\bin;%PATH%
+  - python3 -m pip install nose scikit-build
   # Load PGP Keys for Msys64
   - bash -lc "curl -O http://repo.msys2.org/msys/x86_64/msys2-keyring-r21.b39fb11-1-any.pkg.tar.xz"
   - bash -lc "curl -O http://repo.msys2.org/msys/x86_64/msys2-keyring-r21.b39fb11-1-any.pkg.tar.xz.sig"
