@@ -46,11 +46,11 @@ elif "win" in sys.platform:
 
     print("Running setup on Windows: Assuming that libgttk.dll has been built and is in working directory")
     print("If libgttk.dll has not been built: It should be built with MSYS")
-    shutil.copy("libgttk.dll", "gttk/libgttk.dll")
-    shutil.copy("library/gttk.tcl", "gttk/gttk.tcl")
-    shutil.copy("library/pkgIndex.tcl", "gttk/pkgIndex.tcl")
+    shutil.copy("libgttk.dll", "gttk\\libgttk.dll")
+    shutil.copy("library\\gttk.tcl", "gttk\\gttk.tcl")
+    shutil.copy("library\\pkgIndex.tcl", "gttk\\pkgIndex.tcl")
 
-    kwargs = {}
+    kwargs = {"package_data": {"gttk": ["libgttk.dll", "pkgIndex.tcl", "gttk.tcl"]}}
 
 else:
     print("Only Linux and Windows are currently supported by the build system")
