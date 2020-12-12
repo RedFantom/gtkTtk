@@ -147,7 +147,7 @@ gttk_WidgetCache **gttk_CreateGtkApp(Tcl_Interp *interp) {
     Tk_MakeWindowExist(wc->gttk_tkwin);
     wc->gttk_MainDisplay = Tk_Display(wc->gttk_tkwin);
   }
-  if (wc->gttk_MainDisplay == None) {
+  if (wc->gttk_MainDisplay == NULL) {
     Tcl_MutexUnlock(&gttkMutex);
     Tcl_Free((char *) wc_array[0]);
     Tcl_Free((char *) wc_array[1]);
