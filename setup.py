@@ -42,6 +42,7 @@ if "linux" in sys.platform:
 
 elif "win" in sys.platform:
     import shutil
+    from setuptools import setup
 
     print("Running setup on Windows: Assuming that libgttk.dll has been built and is in working directory")
     print("If libgttk.dll has not been built: It should be built with MSYS")
