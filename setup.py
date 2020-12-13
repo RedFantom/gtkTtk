@@ -63,9 +63,12 @@ elif "win" in sys.platform:
         - The DLL_SEARCH_PATHS environment variable
         """
 
-        SYSTEM_DLLS = ["KERNEL32.dll", "MSVCRT.dll"]
+        SYSTEM_DLLS = ["KERNEL32.dll", "msvcrt.dll", "COMCTL32.dll", "GDI32.dll", "IMM32.dll", "SHELL32.dll", "USER32.dll", "WINSPOOL.DRV",
+                       "api-ms", "ext-ms", "RPCTR4.dll", "MPR.dll", "OLEAUT32.dll", "ACTIVEDS.dll", "UxTheme.dll", "PROPSYS.dll", "ADVAPI.dll",
+                       "ADVAPI32.dll", "DNSAPI.dll", "MSIMG32.dll", "KERNEL", "ole32.dll", "WS2_32.dll", "comdlg32.dll", "ntdll.dll", "dhcpsvc.DLL",
+                       "NSI.dll", "WINNSI.dll", "USP10.dll", ]
 
-        def __init__(self, dll_file: str, dependencies_exe="./deps/dependencies.exe"):
+        def __init__(self, dll_file: str, dependencies_exe="deps\\dependencies.exe"):
             if not os.path.exists(dependencies_exe):
                 print("dependencies.exe is required to find all dependency DLLs")
                 raise FileNotFoundError("Invalid path specified for dependencies.exe")
@@ -82,34 +85,36 @@ elif "win" in sys.platform:
             done = []
             while set(dlls) != set(done):  # As long as not all dlls are done, keep searching
                 for dll in set(dlls) - set(done):  # Go only over not-yet done DLLs
-                    p = sp.Popen([self._exe, "-import", dll], stdout=sp.PIPE)
+                    print("Looking for dependencies of {}".format(dll))
+                    p = sp.Popen([self._exe, "-imports", dll], stdout=sp.PIPE)
                     stdout, stderr = p.communicate()
                     new_dlls = self._parse_dependencies_output(stdout)
                     for new_dll in new_dlls:
-                        if new_dll in self.SYSTEM_DLLS:
+                        if self._is_system_dll(new_dll):
                             continue  # Exclude any DLLs that are known to be from the system
                         p = self._find_dll_abs_path(new_dll)
                         if p is None:
                             print("DLL file {} could not be located!".format(new_dll))
-                        elif p not in dlls:
+                        elif p not in dlls and not "system32" not in p:
                             dlls.append(p)
                     done.append(dll)
             return list(set(dlls))
 
         @staticmethod
-        def _parse_dependencies_output(output: str) -> List[str]:
+        def _parse_dependencies_output(output: bytes) -> List[str]:
             """Parse the output of the dependencies.exe command"""
             dlls: List[str] = list()
-            for line in map(str.strip, output.split("\n")):
+            for line in map(str.strip, output.decode().split("\n")):
                 if not line.startswith("Import from module"):
                     continue
-                line = line.strip("Import from module").strip(":").strip()
+                line = line[len("Import from module"):].strip(":").strip()
                 dlls.append(line)
             return dlls
 
         @staticmethod
         def _find_dll_abs_path(dll_name: str) -> Optional[str]:
             """Find the absolute path of a specific DLL file specified"""
+            print("Looking for path of {}".format(dll_name))
             for var in ("PATH", "DLL_SEARCH_DIRECTORIES"):
                 val = os.environ.get(var, "")
                 for dir in val.split(";"):
@@ -120,9 +125,16 @@ elif "win" in sys.platform:
                         if dll_name in files:
                             return os.path.join(dirpath, dll_name)
             return None
-
+            
+        @staticmethod
+        def _is_system_dll(file_name: str) -> bool:
+            for f in DependencyWalker.SYSTEM_DLLS:
+                if f in file_name:
+                    return True
+            return False
 
     for p in DependencyWalker("libgttk.dll").dependency_dll_files:
+        print("Copying {}".format(p))
         shutil.copyfile(p, os.path.join("gttk", os.path.basename(p)))
 
     kwargs = {"package_data": {"gttk": ["*.dll", "pkgIndex.tcl", "gttk.tcl"]}}
