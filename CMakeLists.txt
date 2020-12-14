@@ -237,6 +237,13 @@ ELSE ( LOAD_GTK_DYNAMICALLY )
   ENDIF ( UNIX )
 ENDIF ( LOAD_GTK_DYNAMICALLY )
 
-FILE ( WRITE gttk/pkgIndex.tcl
+FILE ( WRITE library/pkgIndex.tcl 
 "package ifneeded ttk::theme::gttk ${PKG_VERSION} \\
   [list load [file join $dir lib${PKG_NAME}[info sharedlibextension]] gttk]" )
+
+INSTALL ( TARGETS ${PKG_TARGET_LIB_NAME}
+          RUNTIME DESTINATION ${PKG_TARGET_LIB_NAME}
+          LIBRARY DESTINATION ${PKG_TARGET_LIB_NAME}
+          ARCHIVE DESTINATION ${PKG_TARGET_LIB_NAME} )
+INSTALL ( FILES library/pkgIndex.tcl library/gttk.tcl
+          DESTINATION ${PKG_TARGET_LIB_NAME} )
