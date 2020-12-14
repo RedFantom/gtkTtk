@@ -11,16 +11,9 @@ install:
   - bash -lc "pacman -U --noconfirm --config <(echo) msys2-keyring-r21.b39fb11-1-any.pkg.tar.xz"
   # Kill gpg-agent due to bug in MSYS
   - TaskKill /IM gpg-agent.exe /F
-  # Install build dependencies
+  # Update known packages
   - bash -lc "pacman --needed --noconfirm -Syu"
   - bash -lc "pacman --needed --noconfirm -Sy"
-  - bash -lc "pacman --needed --noconfirm -S mingw-w64-x86_64-pango"
-  - bash -lc "pacman --needed --noconfirm -S mingw-w64-x86_64-cmake"
-  - bash -lc "pacman --needed --noconfirm -S mingw-w64-x86_64-gtk2"
-  - bash -lc "pacman --needed --noconfirm -S mingw-w64-x86_64-glib2"
-  - bash -lc "pacman --needed --noconfirm -S mingw-w64-x86_64-tk"
-  - bash -lc "pacman --needed --noconfirm -S mingw-w64-x86_64-toolchain"
-  # - bash -lc "pacman --needed --noconfirm -S mingw-w64-x86_64-python3-pip"
   # Install Python build dependencies
   - "%PYTHON%\\python.exe -m pip install scikit-build nose"
   # Now using MinGW pkg-config and related executables
@@ -29,8 +22,6 @@ install:
   - appveyor DownloadFile https://github.com/lucasg/Dependencies/releases/download/v1.10/Dependencies_x64_Release.zip
   - 7z e Dependencies_x64_Release.zip -odeps -y
 build_script:
-  - C:\msys64\mingw64\bin\cmake . -G "MinGW Makefiles"
-  - C:\msys64\mingw64\bin\mingw32-make
   - "%PYTHON%\\python.exe setup.py build"
   - "%PYTHON%\\python.exe setup.py bdist_wheel"
 test_script:
@@ -48,5 +39,3 @@ deploy:
   on:
     branch: master
     appveyor_repo_tag: true
-on_finish:
-  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))

@@ -49,9 +49,21 @@ elif "win" in sys.platform:
 
     print("Running setup on Windows: Assuming that libgttk.dll has been built and is in working directory")
     print("If libgttk.dll has not been built: It should be built with MSYS")
-    shutil.copy("libgttk.dll", "gttk\\libgttk.dll")
-    shutil.copy("library\\gttk.tcl", "gttk\\gttk.tcl")
-    shutil.copy("library\\pkgIndex.tcl", "gttk\\pkgIndex.tcl")
+    
+    if os.path.exists("libgttk.dll"):
+        shutil.copy("libgttk.dll", "gttk\\libgttk.dll")
+        shutil.copy("library\\gttk.tcl", "gttk\\gttk.tcl")
+        shutil.copy("library\\pkgIndex.tcl", "gttk\\pkgIndex.tcl")
+        
+    else:
+        print("libgttk.dll has not yet been built, attempting build...")
+        print("MSYS bin directory and MinGW bin directory should be on PATH!")
+        dependencies = ["pango", "cmake", "gtk2", "glib2", "tk", "toolchain"]
+        
+        for dep in dependencies:
+            sp.call(["pacman", "--needed", "--noconfirm", "-S", "mingw-w64-x86_64-{}".format(dep)])
+        sp.call(["cmake", ".", "-G", "MinGW Makefiles"])
+        sp.call(["mingw32-make"])
 
 
     class DependencyWalker(object):
