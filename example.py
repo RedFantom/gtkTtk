@@ -80,13 +80,14 @@ class Example(tk.Tk):
 
 if __name__ == '__main__':
     sys.path = sys.path[2:]
-
-    import gttk
+    from gttk import GTTK
 
     window = Example()
+    gttk = GTTK(window)
     style = ttk.Style(window)
 
     style.theme_use("gttk")
 
-    window.mainloop()
+    print(gttk.get_theme_colour_keys())
 
+    window.mainloop()

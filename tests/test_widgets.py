@@ -7,7 +7,7 @@ import sys
 from unittest import TestCase
 import tkinter as tk
 from tkinter import ttk
-import gttk
+from gttk import GTTK
 
 
 def printf(string, end="\n"):
@@ -41,6 +41,7 @@ class TestThemedWidgets(TestCase):
 
     def setUp(self):
         self.window = tk.Tk()
+        self.gttk = GTTK(self.window)
         self.style = ttk.Style()
 
     def test_widget_creation(self):
