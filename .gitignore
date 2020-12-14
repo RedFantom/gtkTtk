@@ -105,3 +105,7 @@ MANIFEST
 
 # Dependencies Program
 /deps
+
+# Built Packages
+/gttk/pkgIndex.tcl
+/gttk/gttk.tcl
