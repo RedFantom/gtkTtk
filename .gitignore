@@ -100,8 +100,8 @@ MANIFEST
 /latex
 
 # GTK Themes and configuration
-/gttk/share/themes
-/gttk/etc/gtk-2.0
+/gttk/*
+!/gttk/__init__.py
 
 # Dependencies Program
 /deps
