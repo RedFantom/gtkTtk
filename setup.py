@@ -12,13 +12,18 @@ def read(file_name):
     return contents
 
 
+def printf(*args, **kwargs):
+    kwargs.update({"flush": True})
+    print(*args, **kwargs)
+
+
 if "linux" in sys.platform:
     try:
         from skbuild import setup
         from skbuild.command.build import build
     except ImportError:
-        print("scikit-build is required to build this project")
-        print("install with `python -m pip install scikit-build`")
+        printf("scikit-build is required to build this project")
+        printf("install with `python -m pip install scikit-build`")
         raise
 
 
@@ -50,9 +55,9 @@ elif "win" in sys.platform:
     dependencies = ["pango", "cmake", "gtk2", "glib2", "tk", "toolchain"]
     
     for dep in dependencies:
-        print("Installing dependency {}...".format(dep), end=" ")
+        printf("Installing dependency {}...".format(dep), end=" ")
         sp.call(["pacman", "--needed", "--noconfirm", "-S", "mingw-w64-x86_64-{}".format(dep)], stdout=sp.PIPE)
-        print("Done.")
+        printf("Done.")
     sp.call(["cmake", ".", "-G", "MinGW Makefiles"])
     sp.call(["mingw32-make"])
 
@@ -68,7 +73,7 @@ elif "win" in sys.platform:
 
         def __init__(self, dll_file: str, dependencies_exe="deps\\dependencies.exe", specials=dict()):
             if not os.path.exists(dependencies_exe):
-                print("dependencies.exe is required to find all dependency DLLs")
+                printf("dependencies.exe is required to find all dependency DLLs")
                 raise FileNotFoundError("Invalid path specified for dependencies.exe")
             self._exe = dependencies_exe
             if not os.path.exists(dll_file):
@@ -81,7 +86,7 @@ elif "win" in sys.platform:
         @property
         def dependency_dll_files(self) -> List[str]:
             """Return a list of abspaths to the dependency DLL files"""
-            print("Walking dependencies of {}".format(self._dll_file))
+            printf("Walking dependencies of {}".format(self._dll_file))
             dlls = [self._dll_file] + list(map(self._find_dll_abs_path, self._specials.keys()))
             done = []
             while set(dlls) != set(done):  # As long as not all dlls are done, keep searching
@@ -89,7 +94,7 @@ elif "win" in sys.platform:
                     if dll is None:
                         done.append(None)
                         continue
-                    print("Looking for dependencies of {}".format(dll))
+                    printf("Looking for dependencies of {}".format(dll))
                     p = sp.Popen([self._exe, "-imports", dll], stdout=sp.PIPE)
                     stdout, stderr = p.communicate()
                     new_dlls = self._parse_dependencies_output(stdout)
@@ -119,9 +124,9 @@ elif "win" in sys.platform:
             """Find the absolute path of a specific DLL file specified"""
             if dll_name in self._dll_cache:
                 return self._dll_cache[dll_name]
-            print("Looking for path of {}...".format(dll_name), end="")
+            printf("Looking for path of {}...".format(dll_name), end="")
             for var in ("PATH", "DLL_SEARCH_DIRECTORIES"):
-                print(".", end="")
+                printf(".", end="")
                 val = os.environ.get(var, "")
                 for dir in val.split(";"):
                     if not os.path.exists(dir) and os.path.isdir(dir):
@@ -131,10 +136,10 @@ elif "win" in sys.platform:
                     for dirpath, subdirs, files in self.walked[dir]:
                         if dll_name in files:
                             p = os.path.join(dirpath, dll_name)
-                            print(" Found: {}".format(p))
+                            printf(" Found: {}".format(p))
                             self._dll_cache[dll_name] = p
                             return p
-            print("Not found.")
+            printf("Not found.")
             self._dll_cache[dll_name] = None
             return None
         
@@ -145,10 +150,10 @@ elif "win" in sys.platform:
                     d = os.path.dirname(t)
                     if not os.path.exists(d):
                         os.makedirs(d)
-                    print("Copying special {} -> {}".format(p, t))
+                    printf("Copying special {} -> {}".format(p, t))
                     shutil.copyfile(p, t)
                 else:
-                    print("Copying {}".format(p))
+                    printf("Copying {}".format(p))
                     shutil.copyfile(p, os.path.join(target, os.path.basename(p)))
     
     specials={
@@ -156,14 +161,13 @@ elif "win" in sys.platform:
         "libwimp.dll": "/lib/gtk-2.0/2.10.0/engines/"}
     specials.update({"libpixbufloader-{}.dll".format(fmt): "/lib/gdk-pixbuf-2.0/2.10.0/loaders/"
                      for fmt in ["ani", "bmp", "gif", "icns", "ico", "jpeg", "png", "pnm", "qtif", "svg", "tga", "tiff", "xbm", "xpm"]})
-    DependencyWalker("libgttk.dll", specials=specials)\
-        .copy_to_target("gttk")
+    DependencyWalker("libgttk.dll", specials=specials).copy_to_target("gttk")
     kwargs = {"package_data": {"gttk": ["*.dll", "pkgIndex.tcl", "gttk.tcl"] + ["{}/{}".format(dir.strip("/"), base) for base, dir in specials.items()]}}
 
 else:
-    print("Only Linux and Windows are currently supported by the build system")
-    print("If you wish to help design a build method for your OS, please")
-    print("contact the project author.")
+    printf("Only Linux and Windows are currently supported by the build system")
+    printf("If you wish to help design a build method for your OS, please")
+    printf("contact the project author.")
     raise RuntimeError("Unsupported platform")
 
 setup(
