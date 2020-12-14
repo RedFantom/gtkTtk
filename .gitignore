@@ -102,10 +102,7 @@ MANIFEST
 # GTK Themes and configuration
 /gttk/*
 !/gttk/__init__.py
+!/gttk/gttk.tcl
 
 # Dependencies Program
 /deps
-
-# Built Packages
-/gttk/pkgIndex.tcl
-/gttk/gttk.tcl
