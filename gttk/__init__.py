@@ -40,15 +40,19 @@ class GTTK(object):
 
     def get_themes_directory(self) -> str:
         """Return the directory in which GTK looks for installed themes"""
-        return self.tk.call("ttk::theme::gttk::getDirectory", "theme")
+        return self.tk.call("ttk::theme::gttk::gtkDirectory", "theme")
 
     def get_default_files(self) -> Tuple[str]:
         """Return the files that GTK parses by default at start-up"""
-        return self.tk.call("ttk::theme::gttk::getDirectory", "default_files")
+        return self.tk.call("ttk::theme::gttk::gtkDirectory", "default_files")
 
     def get_current_theme(self) -> str:
         """Return the name of the currently active GTK theme"""
         return self.tk.call("ttk::theme::gttk::currentThemeName")
+
+    def get_module_path(self) -> str:
+        """Return the name of the module path (theme engines)"""
+        return self.tk.call("ttk::theme::gttk::gtkDirectory", "module")
 
     def get_gtk_enum_value(self, value: int) -> str:
         """

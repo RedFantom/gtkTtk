@@ -290,10 +290,10 @@ int gttk_GtkEnum(ClientData clientData, Tcl_Interp *interp,
 int gttk_GtkDirectory(ClientData clientData, Tcl_Interp *interp,
                                  int objc, Tcl_Obj *const objv[]) {
   static const char *Methods[] = {
-    "theme", "default_files", (char *) NULL
+    "theme", "default_files", "module", (char *) NULL
   };
   enum methods {
-    THEME, DEFAULT_FILES
+    THEME, DEFAULT_FILES, MODULE
   };
   int type;
   gchar *dir = NULL, **dirs = NULL;
@@ -331,6 +331,9 @@ int gttk_GtkDirectory(ClientData clientData, Tcl_Interp *interp,
       } else {
         dirs = gttk_gtk_rc_get_default_files();
       }
+      break;
+    case MODULE:
+      dir = gtk_rc_get_module_dir();
       break;
   }
   if (dir) {
