@@ -75,7 +75,7 @@ elif "win" in sys.platform:
         - The DLL_SEARCH_PATHS environment variable
         """
 
-        def __init__(self, dll_file: str, dependencies_exe="deps\\dependencies.exe"):
+        def __init__(self, dll_file: str, dependencies_exe="deps\\dependencies.exe", specials=dict()):
             if not os.path.exists(dependencies_exe):
                 print("dependencies.exe is required to find all dependency DLLs")
                 raise FileNotFoundError("Invalid path specified for dependencies.exe")
@@ -84,15 +84,19 @@ elif "win" in sys.platform:
                 raise FileNotFoundError("'{}' does not specify a valid path to first file".format(dll_file))
             self._dll_file = dll_file
             self._dll_cache = {}
+            self._specials = specials
 
         @property
         def dependency_dll_files(self) -> List[str]:
             """Return a list of abspaths to the dependency DLL files"""
             print("Walking dependencies of {}".format(self._dll_file))
-            dlls = [self._dll_file]
+            dlls = [self._dll_file] + list(map(self._find_dll_abs_path, self._specials.keys()))
             done = []
             while set(dlls) != set(done):  # As long as not all dlls are done, keep searching
                 for dll in set(dlls) - set(done):  # Go only over not-yet done DLLs
+                    if dll is None:
+                        done.append(None)
+                        continue
                     print("Looking for dependencies of {}".format(dll))
                     p = sp.Popen([self._exe, "-imports", dll], stdout=sp.PIPE)
                     stdout, stderr = p.communicate()
@@ -106,7 +110,7 @@ elif "win" in sys.platform:
                         elif p not in dlls:
                             dlls.append(p)
                     done.append(dll)
-            return list(set(dlls))
+            return list(set(dlls) - set((None,)))
 
         @staticmethod
         def _parse_dependencies_output(output: bytes) -> List[str]:
@@ -139,11 +143,19 @@ elif "win" in sys.platform:
             print("Not found.")
             self._dll_cache[dll_name] = None
             return None
-
-    for p in DependencyWalker("libgttk.dll").dependency_dll_files:
-        print("Copying {}".format(p))
-        shutil.copyfile(p, os.path.join("gttk", os.path.basename(p)))
-
+        
+        def copy_to_target(self, target: str):
+            for p in self.dependency_dll_files:
+                if os.path.basename(p) in self._specials:
+                    t = os.path.join(target, self._specials[os.path.basename(p)])
+                    print("Copying special {} -> {}".format(p, t))
+                    shutil.copyfile(p, t)
+                else:
+                    print("Copying {}".format(p))
+                    shutil.copyfile(p, os.path.join(target, os.path.basename(p)))
+       
+    DependencyWalker("libgttk.dll", specials={"libpixmap.dll": "/lib/gtk2.0/2.10.0/engines/", "libwimp.dll": "/lib/gtk2.0/2.10.0/engines/"})\
+        .copy_to_target("gttk")
     kwargs = {"package_data": {"gttk": ["*.dll", "pkgIndex.tcl", "gttk.tcl"]}}
 
 else:
