@@ -85,6 +85,7 @@ elif "win" in sys.platform:
             self._dll_file = dll_file
             self._dll_cache = {}
             self._specials = specials
+            self.walked = {}
 
         @property
         def dependency_dll_files(self) -> List[str]:
@@ -128,16 +129,15 @@ elif "win" in sys.platform:
             if dll_name in self._dll_cache:
                 return self._dll_cache[dll_name]
             print("Looking for path of {}...".format(dll_name), end="")
-            walked = {}
             for var in ("PATH", "DLL_SEARCH_DIRECTORIES"):
                 print(".", end="")
                 val = os.environ.get(var, "")
                 for dir in val.split(";"):
                     if not os.path.exists(dir) and os.path.isdir(dir):
                         continue
-                    if dir not in walked:
-                        walked[dir] = list(os.walk(dir))
-                    for dirpath, subdirs, files in walked[dir]:
+                    if dir not in self.walked:
+                        self.walked[dir] = list(os.walk(dir))
+                    for dirpath, subdirs, files in self.walked[dir]:
                         if dll_name in files:
                             p = os.path.join(dirpath, dll_name)
                             print(" Found: {}".format(p))
@@ -150,16 +150,20 @@ elif "win" in sys.platform:
         def copy_to_target(self, target: str):
             for p in self.dependency_dll_files:
                 if os.path.basename(p) in self._specials:
-                    t = os.path.join(target, self._specials[os.path.basename(p)])
+                    t = os.path.join(target, *self._specials[os.path.basename(p)].split("/"), os.path.basename(p))
+                    d = os.path.dirname(t)
+                    if not os.path.exists(d):
+                        os.makedirs(d)
                     print("Copying special {} -> {}".format(p, t))
                     shutil.copyfile(p, t)
                 else:
                     print("Copying {}".format(p))
                     shutil.copyfile(p, os.path.join(target, os.path.basename(p)))
-       
-    DependencyWalker("libgttk.dll", specials={"libpixmap.dll": "/lib/gtk2.0/2.10.0/engines/", "libwimp.dll": "/lib/gtk2.0/2.10.0/engines/"})\
+    
+    specials={"libpixmap.dll": "/lib/gtk-2.0/2.10.0/engines/", "libwimp.dll": "/lib/gtk-2.0/2.10.0/engines/"}
+    DependencyWalker("libgttk.dll", specials=specials)\
         .copy_to_target("gttk")
-    kwargs = {"package_data": {"gttk": ["*.dll", "pkgIndex.tcl", "gttk.tcl"]}}
+    kwargs = {"package_data": {"gttk": ["*.dll", "pkgIndex.tcl", "gttk.tcl"] + ["{}/{}".format(dir.strip("/"), base) for base, dir in specials.items()]}}
 
 else:
     print("Only Linux and Windows are currently supported by the build system")
