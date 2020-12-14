@@ -21,6 +21,8 @@ install:
   # Download Dependencies (dependency walker)
   - appveyor DownloadFile https://github.com/lucasg/Dependencies/releases/download/v1.10/Dependencies_x64_Release.zip
   - 7z e Dependencies_x64_Release.zip -odeps -y
+  # Add %PYTHON% to the path for libffi-7.dll
+  - set PATH=%PYTHON%;%PATH%
 build_script:
   - "%PYTHON%\\python.exe setup.py build"
   - "%PYTHON%\\python.exe setup.py bdist_wheel"
