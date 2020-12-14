@@ -98,3 +98,10 @@ MANIFEST
 /docs/doxygen/xml
 /html
 /latex
+
+# GTK Themes and configuration
+/gttk/share/themes
+/gttk/etc/gtk-2.0
+
+# Dependencies Program
+/deps
