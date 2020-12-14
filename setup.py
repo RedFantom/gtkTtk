@@ -128,13 +128,16 @@ elif "win" in sys.platform:
             if dll_name in self._dll_cache:
                 return self._dll_cache[dll_name]
             print("Looking for path of {}...".format(dll_name), end="")
+            walked = {}
             for var in ("PATH", "DLL_SEARCH_DIRECTORIES"):
                 print(".", end="")
                 val = os.environ.get(var, "")
                 for dir in val.split(";"):
                     if not os.path.exists(dir) and os.path.isdir(dir):
                         continue
-                    for dirpath, subdirs, files in os.walk(dir):
+                    if dir not in walked:
+                        walked[dir] = list(os.walk(dir))
+                    for dirpath, subdirs, files in walked[dir]:
                         if dll_name in files:
                             p = os.path.join(dirpath, dll_name)
                             print(" Found: {}".format(p))
