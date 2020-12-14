@@ -47,23 +47,14 @@ elif "win" in sys.platform:
     import subprocess as sp
     from typing import List, Optional
 
-    print("Running setup on Windows: Assuming that libgttk.dll has been built and is in working directory")
-    print("If libgttk.dll has not been built: It should be built with MSYS")
+    dependencies = ["pango", "cmake", "gtk2", "glib2", "tk", "toolchain"]
     
-    if os.path.exists("libgttk.dll"):
-        shutil.copy("libgttk.dll", "gttk\\libgttk.dll")
-        shutil.copy("library\\gttk.tcl", "gttk\\gttk.tcl")
-        shutil.copy("library\\pkgIndex.tcl", "gttk\\pkgIndex.tcl")
-        
-    else:
-        print("libgttk.dll has not yet been built, attempting build...")
-        print("MSYS bin directory and MinGW bin directory should be on PATH!")
-        dependencies = ["pango", "cmake", "gtk2", "glib2", "tk", "toolchain"]
-        
-        for dep in dependencies:
-            sp.call(["pacman", "--needed", "--noconfirm", "-S", "mingw-w64-x86_64-{}".format(dep)])
-        sp.call(["cmake", ".", "-G", "MinGW Makefiles"])
-        sp.call(["mingw32-make"])
+    for dep in dependencies:
+        print("Installing dependency {}...".format(dep), end=" ")
+        sp.call(["pacman", "--needed", "--noconfirm", "-S", "mingw-w64-x86_64-{}".format(dep)], stdout=sp.PIPE)
+        print("Done.")
+    sp.call(["cmake", ".", "-G", "MinGW Makefiles"])
+    sp.call(["mingw32-make"])
 
 
     class DependencyWalker(object):
@@ -160,7 +151,11 @@ elif "win" in sys.platform:
                     print("Copying {}".format(p))
                     shutil.copyfile(p, os.path.join(target, os.path.basename(p)))
     
-    specials={"libpixmap.dll": "/lib/gtk-2.0/2.10.0/engines/", "libwimp.dll": "/lib/gtk-2.0/2.10.0/engines/"}
+    specials={
+        "libpixmap.dll": "/lib/gtk-2.0/2.10.0/engines/", 
+        "libwimp.dll": "/lib/gtk-2.0/2.10.0/engines/"}
+    specials.update({"libpixbufloader-{}.dll".format(fmt): "/lib/gdk-pixbuf-2.0/2.10.0/loaders/"
+                     for fmt in ["ani", "bmp", "gif", "icns", "ico", "jpeg", "png", "pnm", "qtif", "svg", "tga", "tiff", "xbm", "xpm"]})
     DependencyWalker("libgttk.dll", specials=specials)\
         .copy_to_target("gttk")
     kwargs = {"package_data": {"gttk": ["*.dll", "pkgIndex.tcl", "gttk.tcl"] + ["{}/{}".format(dir.strip("/"), base) for base, dir in specials.items()]}}
